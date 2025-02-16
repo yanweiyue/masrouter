@@ -11,7 +11,7 @@ We provide the code of our paper. The algorithm implementation code is in `MAR` 
 ### Add API keys in `template.env` and change its name to `.env`
 
 ```python
-URL = "" # the URL of OpenAI LLM backend
+URL = "" # the URL of LLM backend
 KEY = "" # the key for API
 ```
 We recommend that this API be able to access multiple LLMs.

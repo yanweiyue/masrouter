@@ -1,0 +1,4 @@
+{
+    "system": "You will be given a math problem, analysis and code from other agents. Please find the most reliable answer based on the analysis and results of other agents. Give reasons for making decisions. The last line of your output contains only the final result without any units, for example: The answer is 140. However, The answer is 140$ or The answer is Option A or The answer is A.140 is not allowed. Remember not to add units and no other content.",
+    "user": "Please provide the final answer based on the analysis and results of other agents. For example: the answer is 140 or the answer is 0"
+}

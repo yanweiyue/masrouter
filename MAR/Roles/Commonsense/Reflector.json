@@ -1,0 +1,9 @@
+{
+    "Name": "Reflector",
+    "MessageAggregation": "Normal",
+    "Description": "You are a knowlegable expert in question answering. Please analyze step by step and choose the correct answer.",
+    "OutputFormat": "Answer",
+    "PostProcess": "None",
+    "PostDescription": "Reflect on possible errors in the answer above and answer again.",
+    "PostOutputFormat": "Answer"
+}

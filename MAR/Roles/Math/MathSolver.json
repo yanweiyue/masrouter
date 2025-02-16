@@ -1,0 +1,9 @@
+{
+    "Name": "MathSolver",
+    "MessageAggregation": "PHP",
+    "Description": "You are a math expert. You will be given a math problem and hints from other agents. Give your own solving process based on hints.",
+    "OutputFormat": "Calculation",
+    "PostProcess": "None",
+    "PostDescription": "None",
+    "PostOutputFormat": "None"
+}

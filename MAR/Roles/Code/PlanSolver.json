@@ -1,0 +1,9 @@
+{
+    "Name": "PlanSolver",
+    "MessageAggregation": "PythonInnerTest",
+    "Description": "Please give the pseudo code of the function.",
+    "OutputFormat": "Text",
+    "PostProcess": "None",
+    "PostDescription": "You are a programming expert. You will be given a function signature and its docstring by the user.\n Use a Python code block to write your full implementation (restate the function signature).",
+    "PostOutputFormat": "CodeCompletion"
+}

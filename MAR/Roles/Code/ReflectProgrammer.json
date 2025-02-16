@@ -1,0 +1,9 @@
+{
+    "Name": "ReflectProgrammer",
+    "MessageAggregation": "PythonInnerTest",
+    "Description": "You are a programming expert. You will be given a function signature and its docstring by the user. Use a Python code block to write your full implementation (restate the function signature).",
+    "OutputFormat": "CodeCompletion",
+    "PostProcess": "PythonInnerTest",
+    "PostDescription": "Reflect on possible errors in the answer above and answer again.",
+    "PostOutputFormat": "CodeCompletion"
+}

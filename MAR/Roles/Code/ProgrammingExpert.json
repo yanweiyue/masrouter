@@ -1,0 +1,9 @@
+{
+    "Name": "ProgrammingExpert",
+    "MessageAggregation": "PythonInnerTest",
+    "Description": "You are a programming expert. You will be given a function signature and its docstring by the user.\nYou can be combined with specific examples in the docstring.\n Use a Python code block to write your full implementation (restate the function signature).",
+    "OutputFormat": "CodeCompletion",
+    "PostProcess": "PythonInnerTest",
+    "PostDescription": "None",
+    "PostOutputFormat": "None"
+}

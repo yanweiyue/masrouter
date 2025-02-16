@@ -1,0 +1,9 @@
+{
+    "Name": "Critic",
+    "MessageAggregation": "Normal",
+    "Description": "You are an excellent critic. Please point out potential issues in other agent's analysis point by point. Give your critical opinion. Finally give the final result",
+    "OutputFormat": "Answer",
+    "PostProcess": "None",
+    "PostDescription": "None",
+    "PostOutputFormat": "None"
+}

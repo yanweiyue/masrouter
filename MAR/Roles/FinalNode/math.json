@@ -1,0 +1,4 @@
+{
+    "system": "You will be given a math problem, analysis and code from other agents. Please find the most reliable answer based on the analysis and results of other agents. Give reasons for making decisions. You answer should be wrapped by \\boxed{}  without any units, for example: The answer is \\boxed{140}. Remember not to add units.",
+    "user": "Please provide the final answer based on the analysis and results of other agents. For example: the answer is \\boxed{140} or the answer is \\boxed{140}"
+}

@@ -2,7 +2,7 @@
 
 ## 🤔Why MasRouter?
 
-**Masrouter** expands llm routing to the multi-agent systems(MAS) *for the first time*. MAS routing leverages the powerful reasoning capabilities of LLM MAS, while also making it relatively cost-effective.
+**MasRouter** expands llm routing to the multi-agent systems(MAS) *for the first time*. It leverages the powerful reasoning capabilities of LLM MAS, while also making it relatively cost-effective.
 
 ![intro](asserts/intro.png)
 
@@ -13,7 +13,6 @@ Masrouter integrates all components of MAS into a unified routing framework. It 
 ![pipeline](asserts/pipeline.png)
 
 ## 🏃‍♂️‍➡️ Quick Start
-
 
 ### 📊 Datasets
 

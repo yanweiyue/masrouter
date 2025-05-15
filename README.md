@@ -1,17 +1,18 @@
-# MasRouter: Learning to Route LLMs for Multi-Agent Systems
+# [ACL 2025] MasRouter: Learning to Route LLMs for Multi-Agent Systems
 
 ## 📰 News
 
-🚩 Updates (2025-2-16) Initial upload to arXiv [PDF](https://arxiv.org/abs/2502.11133).
+- 🎉 Updates (2025-5-15) MasRouter is accpected to ACL 2025 Main!
+- 🚩 Updates (2025-2-16) Initial upload to arXiv [PDF](https://arxiv.org/abs/2502.11133).
 
 
-## 🤔Why MasRouter?
+## 🤔 Why MasRouter?
 
 **MasRouter** expands LLM routing to the multi-agent systems (MAS) *for the first time*. It leverages the powerful reasoning capabilities of LLM MAS, while also making it relatively cost-effective.
 
 ![intro](assets/intro.png)
 
-## 👋🏻Method Overview
+## 👋🏻 Method Overview
 
 **MasRouter** integrates all components of MAS into a unified routing framework. It employs collaboration mode determination, role allocation, and LLM routing through a cascaded controller network, progressively constructing a MAS that balances effectiveness and efficiency.
 

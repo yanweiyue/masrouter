@@ -112,11 +112,6 @@ if __name__ == '__main__':
                 is_solved_list.append(is_solved)
                 answer_loss = -log_prob * utility
                 answers_loss.append(answer_loss)
-                logger.debug(f"Raw Result: {result}")
-                logger.debug(f"Predict: {predict_answer}")
-                logger.debug(f"Truth: {true_answer}")
-                logger.debug(f"is_solved: {is_solved}")
-                logger.debug(f"Cost: {cost}")
             
             answer_loss = torch.stack(answers_loss).sum() / len(answers_loss)
             vae_loss = vae_loss.mean()
@@ -131,15 +126,6 @@ if __name__ == '__main__':
             logger.info(f"Batch time {time.time() - start_ts:.3f}")
             logger.info(f"Accuracy: {accuracy}")
             logger.info(f"utilities:{utilities}")
-            logger.info(f"avg reward:{sum(utilities)/len(utilities)}")
-            logger.info(f"task_loss:{task_loss.item()}" )
-            logger.info(f"answer_loss:{answer_loss.item()}")
-            logger.info(f"vae_loss:{vae_loss.item()}")
-            # logger.info(f"adjust_loss:{adjust_loss.item()}")
-            logger.info(f"loss:{loss.item()}")
-            logger.info(f"Cost {Cost.instance().value}")
-            logger.info(f"PromptTokens {PromptTokens.instance().value}")
-            logger.info(f"CompletionTokens {CompletionTokens.instance().value}")
 
         logger.info(f"Epoch {epoch} Finishes",80*'-')
         torch.save(router.state_dict(), f"gsm8k_router_epoch{epoch}_newnew.pth")
@@ -167,17 +153,9 @@ if __name__ == '__main__':
             total_executed = total_executed + 1
             utility = is_solved - cost * args.cost_rate
             utilities.append(utility)
-            logger.debug(f"Raw Result: {result}")
-            logger.debug(f"Predict: {predict_answer}")
-            logger.debug(f"Truth: {true_answer}")
-            logger.debug(f"Cost: {cost}")
 
         accuracy = total_solved / total_executed
         logger.info(f"Batch time {time.time() - start_ts:.3f}")
         logger.info(f"Accuracy: {accuracy}")
         logger.info(f"utilities:{utilities}")
-        logger.info(f"avg reward:{sum(utilities)/len(utilities)}")
-        logger.info(f"Cost {Cost.instance().value}")
-        logger.info(f"PromptTokens {PromptTokens.instance().value}")
-        logger.info(f"CompletionTokens {CompletionTokens.instance().value}")
     logger.info("Finish testing...")

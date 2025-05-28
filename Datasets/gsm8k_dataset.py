@@ -13,7 +13,6 @@ def gsm_data_process(dataset):
 
     return list_data_dict
 
-
 def gsm_get_predict(pred_str):
     if('answer is ' in pred_str):
         pred = pred_str.split('answer is ')[-1].strip()

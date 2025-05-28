@@ -219,8 +219,6 @@ class TaskClassifier(nn.Module):
         scores = F.softmax(scores/self.temp, dim=1) # N_q*N_t
         selected_tasks_id = torch.argmax(scores, dim=1) # N_q
 
-        logger.info(f"Task classification scores: {scores}")
-
         return selected_tasks_id, scores, query_embedding
 
 class CollabDeterminer(nn.Module):
@@ -252,9 +250,6 @@ class CollabDeterminer(nn.Module):
         log_probs = torch.log(scores[torch.arange(scores.size(0)), selected_index]).unsqueeze(1)
         collab_embedding = collab_z[selected_index]
 
-        logger.info(f"Collaboration method selection scores: {scores}")
-        logger.info(f"Score Collab Mean:{scores.mean(dim=0)}")
-
         return selected_index, log_probs, collab_embedding, vae_loss
 
 
@@ -280,7 +275,6 @@ class NumDeterminer(nn.Module):
         agent_num_int = torch.clamp(torch.round(agent_num_float), 1, self.max_agent).int() # N_q*1
         vae_loss = vae_loss_function(x_hat, queries, mu, log_var)
 
-        logger.info(f"Number of agents selection scores: {agent_num_float}")
         return agent_num_int, agent_num_float, vae_loss
 
 
@@ -333,7 +327,6 @@ class RoleAllocation(torch.nn.Module):
 
                 current_role_embedding = role_embedding[selected_index] # 1*hidden_dim
                 selected_roles_idx[-1].append(selected_index)
-                logger.info(f"Role selection scores: {scores}")
             summary_role_list.append(history_role_embedding)
             summary_role = torch.cat(summary_role_list, dim=0) # N_q*hidden_dim
         return selected_roles_idx, log_probs, summary_role, vae_loss/len(roles_list)
@@ -375,8 +368,6 @@ class LLMRouter(torch.nn.Module):
             for j in range(contexts.size(0)):
                 if agent_num_mask[j] > 0:
                     selected_llm_index[j].append(int(selected_index[j].item()))
-        logger.info(f"LLM selection scores: {scores}")
-        logger.info(f"Score LLM Mean:{scores.mean(dim=0)}")
         log_probs = gammaln(agent_num_float + 1) - gammaln(selected_llm + 1).sum(dim=1).unsqueeze(1) + (selected_llm * torch.log(scores)).sum(dim=1).unsqueeze(1) # N_q*1
         
         return selected_llm_index, log_probs, vae_loss

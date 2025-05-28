@@ -53,13 +53,13 @@ class MMLUDataset(ABC):
     def __len__(self) -> int:
         return len(self._total_df)
 
-    def __getitem__(self, index: int) -> pd.DataFrame:
+    def __getitem__(self, index: int) -> Union[pd.DataFrame, pd.Series]:
         record = self._total_df.iloc[index]
         assert isinstance(record, pd.DataFrame) or isinstance(record, pd.Series)
         return record
 
     @staticmethod
-    def record_to_input(record: pd.DataFrame) -> Dict[str, Any]:
+    def record_to_input(record: Union[pd.DataFrame, pd.Series]) -> Dict[str, Any]:
         demo_question = (
             f"{record['question']}\n"
             f"Option A: {record['A']}\n"
@@ -86,7 +86,7 @@ class MMLUDataset(ABC):
         return answer
 
     @staticmethod
-    def record_to_target_answer(record: pd.DataFrame) -> str:
+    def record_to_target_answer(record: Union[pd.DataFrame, pd.Series]) -> str:
         correct_answer = record['correct_answer']
         assert isinstance(correct_answer, str), (
             f"String expected but got {correct_answer} "

@@ -5,7 +5,7 @@ class MbppDataset:
     def __init__(self, split: Union[Literal['train'], Literal['val'], Literal['test'], Literal['prompt']],):
         self._splits = {'train': 'full/train-00000-of-00001.parquet', 'test': 'full/test-00000-of-00001.parquet', 'val': 'full/validation-00000-of-00001.parquet', 'prompt': 'full/prompt-00000-of-00001.parquet'}
         self.df = pd.read_parquet("hf://datasets/google-research-datasets/mbpp/" + self._splits[split])
-        self.df = self.df.sample(frac=0.2).reset_index(drop=True)
+        # self.df = self.df.sample(frac=0.2).reset_index(drop=True)
         self.df = process_data(self.df)
 
     def __len__(self):

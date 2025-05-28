@@ -5,7 +5,7 @@ import json
 from typing import Union, List, Literal, Any, Dict
 import numpy as np
 
-def load_math_dataset(data_path: str, split: Union [Literal['train'], Literal['test']]='train') -> List[Dict[str, str]]:
+def load_math_dataset(data_path: str, split: Union [Literal['train'], Literal['test'], Literal['sampled_train'], Literal['sampled_test']]='train') -> List[Dict[str, str]]:
     print("Loading Math dataset...")
     category_paths = glob.glob(os.path.join(data_path, split, "*"))
     category_paths = sorted(category_paths)
@@ -221,7 +221,7 @@ def remove_boxed(s):
 def MATH_get_predict(pred_str):
     if '\\boxed' in pred_str:
         pred = remove_boxed(last_boxed_only_string(pred_str))
-        return pred.strip()
+        return pred.strip() if pred is not None else "0"
     elif('answer is ' in pred_str):
         pred = pred_str.split('answer is ')[-1].strip().rstrip(".")
         return pred.strip()

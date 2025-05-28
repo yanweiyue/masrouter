@@ -334,3 +334,9 @@ class Graph(ABC):
             prune_idx = sorted_edges_idx[:int(prune_num_edges + num_masks)]
             self.temporal_masks[prune_idx] = 0
         return self.spatial_masks, self.temporal_masks
+    
+    def list_nodes(self):
+        profile = []
+        for i, node_id in enumerate(self.nodes):
+            profile.append({'id': node_id, 'role': self.nodes[node_id].role.role, 'llm_name': self.nodes[node_id].llm.model_name})
+        return profile

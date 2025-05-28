@@ -10,13 +10,14 @@ def cal_token(model:str, text:str):
     return num_tokens
 
 def cost_count(prompt, response, model_name):
-    branch: str
     prompt_len: int
     completion_len: int
     price: float
 
     prompt_len = cal_token(model_name, prompt)
     completion_len = cal_token(model_name, response)
+    if model_name not in MODEL_PRICE.keys():
+        return 0, 0, 0
     prompt_price = MODEL_PRICE[model_name]["input"]
     completion_price = MODEL_PRICE[model_name]["output"]
     price = prompt_len * prompt_price / 1000000 + completion_len * completion_price / 1000000
@@ -50,8 +51,8 @@ MODEL_PRICE = {
         "output": 0.6
     },
     "claude-3-5-haiku-20241022":{
-        "input": 0.1,
-        "output": 0.5
+        "input": 0.8,
+        "output": 4.0
     },
     "claude-3-5-sonnet-20241022":{
         "input": 3.0,
@@ -70,6 +71,10 @@ MODEL_PRICE = {
         "output": 0.2
     },
     "Meta-Llama-3.1-70B-Instruct":{
+        "input": 0.2,
+        "output": 0.2
+    },
+    "llama-3.1-70b-instruct":{
         "input": 0.2,
         "output": 0.2
     },

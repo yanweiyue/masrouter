@@ -1,5 +1,5 @@
 {
-    "Name": "Knowledge Expert",
+    "Name": "KnowledgeExpert",
     "MessageAggregation": "Normal",
     "Description": "You are a knowlegable expert in question answering. Please analyze step by step and choose the correct answer.",
     "OutputFormat": "Answer",

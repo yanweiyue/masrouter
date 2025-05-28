@@ -80,6 +80,70 @@ class ALLChat(LLM):
 
         return response
     
+
+@LLMRegistry.register('Deepseek')
+class DSChat(LLM):
+    def __init__(self, model_name: str):
+        self.model_name = model_name
+    
+    @retry(wait=wait_random_exponential(max=100), stop=stop_after_attempt(10))
+    def gen(
+        self,
+        messages: Union[List[Dict], str],
+        max_tokens: Optional[int] = None,
+        temperature: Optional[float] = None,
+        num_comps: Optional[int] = None,
+        ) -> Union[List[str], str]:
+        if max_tokens is None:
+            max_tokens = self.DEFAULT_MAX_TOKENS
+        if temperature is None:
+            temperature = self.DEFAULT_TEMPERATURE
+        if num_comps is None:
+            num_comps = self.DEFUALT_NUM_COMPLETIONS
+
+        if isinstance(messages, str):
+            messages = [{'role':"user", 'content':messages}]
+        client = OpenAI(base_url = os.environ.get("DS_URL"),
+                        api_key = os.environ.get("DS_KEY"))
+        chat_completion = client.chat.completions.create(
+        messages = messages,
+        model = self.model_name,
+        )
+        response = chat_completion.choices[0].message.content
+        prompt = "".join([item['content'] for item in messages])
+        cost_count(prompt, response, self.model_name)
+        return response
+
+    async def agen(
+        self,
+        messages: Union[List[Dict], str],
+        max_tokens: Optional[int] = None,
+        temperature: Optional[float] = None,
+        num_comps: Optional[int] = None,
+        ) -> Union[List[str], str]:
+
+        if max_tokens is None:
+            max_tokens = self.DEFAULT_MAX_TOKENS
+        if temperature is None:
+            temperature = self.DEFAULT_TEMPERATURE
+        if num_comps is None:
+            num_comps = self.DEFUALT_NUM_COMPLETIONS
+
+        if isinstance(messages, str):
+            messages = [{'role':"user", 'content':messages}]
+        
+        client = AsyncOpenAI(base_url = os.environ.get("DS_URL"),
+                             api_key = os.environ.get("DS_KEY"),)
+        chat_completion = await client.chat.completions.create(
+        messages = messages,
+        model = self.model_name,
+        max_tokens = max_tokens,
+        temperature = temperature,
+        )
+        response = chat_completion.choices[0].message.content
+
+        return response
+
 @retry(wait=wait_random_exponential(max=100), stop=stop_after_attempt(10))
 async def achat(
     model: str,

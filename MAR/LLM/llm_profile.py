@@ -15,23 +15,23 @@ llm_profile = [
                     In Math Benchmark MATH, claude-3-5-haiku achieves an accuracy of 65.9.'},
                 {'Name': 'gemini-1.5-flash-latest',
                  'Description': 'Gemini 1.5 Flash was purpose-built as our fastest, most cost-efficient model yet for high volume tasks, at scale, to address developers feedback asking for lower latency and cost.\n\
-                    The model costs $0.2 per million input tokens and $0.8 per million output tokens\n\
+                    The model costs $0.15 per million input tokens and $0.6 per million output tokens\n\
                     In General Q&A Benchmark MMLU, gemini-1.5-flash achieves an accuracy of 80.0.\n\
                     In Reasoning Benchmark GPQA, gemini-1.5-flash achieves an accuracy of 39.5.\n\
                     In Coding Benchmark HumanEval, gemini-1.5-flash achieves an accuracy of 82.6.\n\
                     In Math Benchmark MATH, gemini-1.5-flash achieves an accuracy of 74.4.'},
-                {'Name': 'Meta-Llama-3.1-70B-Instruct',
-                 'Description': 'The Meta Llama 3.1 multilingual large language model (LLM) is a pretrained and instruction tuned generative model in 70B (text in/text out).\n\
+                {'Name': 'llama-3.1-70b-instruct',
+                 'Description': 'The Meta Llama-3.1-70b-instruct multilingual large language model (LLM) is a pretrained and instruction tuned generative model in 70B (text in/text out).\n\
                     The model costs $0.2 per million input tokens and $0.2 per million output tokens\n\
                     In General Q&A Benchmark MMLU, Llama 3.1 achieves an accuracy of 79.1.\n\
                     In Reasoning Benchmark GPQA, Llama 3.1 achieves an accuracy of 46.7.\n\
                     In Coding Benchmark HumanEval, Llama 3.1 achieves an accuracy of 80.7.\n\
                     In Math Benchmark MATH, Llama 3.1 achieves an accuracy of 60.3.'},
                 {'Name': 'deepseek-chat',
-                 'Description': 'The deepseek multilingual large language model (LLM) is a pretrained and instruction tuned generative model in 70B (text in/text out).\n\
-                    The model costs $0.1 per million input tokens and $0.4 per million output tokens\n\
-                    In General Q&A Benchmark MMLU, Llama 3.1 achieves an accuracy of 88.5.\n\
-                    In Reasoning Benchmark GPQA, Llama 3.1 achieves an accuracy of 59.1.\n\
-                    In Coding Benchmark HumanEval, Llama 3.1 achieves an accuracy of 88.4.\n\
-                    In Math Benchmark MATH, Llama 3.1 achieves an accuracy of 85.1'},
+                 'Description': 'DeepSeek-V3 is a powerful open-source Mixture-of-Experts (MoE) language model developed by Chinese AI company DeepSeek, featuring 671 billion total parameters with 37 billion activated per token, achieving performance comparable to leading closed-source models like GPT-4.\n\
+                    The model costs $0.27 per million input tokens and $1.1 per million output tokens\n\
+                    In General Q&A Benchmark MMLU, deepseek-chat achieves an accuracy of 88.5.\n\
+                    In Reasoning Benchmark GPQA, deepseek-chat achieves an accuracy of 59.1.\n\
+                    In Coding Benchmark HumanEval, deepseek-chat achieves an accuracy of 88.4.\n\
+                    In Math Benchmark MATH, deepseek-chat achieves an accuracy of 85.1'},
                 ]

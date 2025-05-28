@@ -1,7 +1,7 @@
 {
     "Name": "WikiSearcher",
     "MessageAggregation": "Normal",
-    "Description": "Please give several key entities that need to be searched in wikipedia to solve the problem. ",
+    "Description": "Please give several key entities that need to be searched in wikipedia to solve the problem. These entities should be separate entries, which can be found on Wikipedia.",
     "OutputFormat": "Keys",
     "PostProcess": "Wiki",
     "PostDescription": "You are a knowlegable expert in question answering. Please answer the question based on the explanation of the question keywords obtained from the wikipedia search.",

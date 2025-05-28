@@ -3,8 +3,12 @@ import torch
 import shortuuid
 from collections import Counter
 import random
+import os
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
 
-from typing import List, Union, Literal
+from typing import List, Union, Literal, Optional
 
 ANS_RE = re.compile(r"#### (\-?[0-9\.\,]+)")
 INVALID_ANS = "[invalid]"
@@ -100,12 +104,12 @@ def find_mode(nums):
     return mode
 
 
-def get_kwargs(mode:Literal['DirectAnswer','CoT','IO','FullConnected','Random','Chain','Debate','Layered','Star']
+def get_kwargs(mode:Union[Literal['DirectAnswer','CoT','IO','FullConnected','Random','Chain','Debate','Layered','Star'],str]
                ,N:int):
     initial_spatial_probability: float = 0.5
-    fixed_spatial_masks:List[List[int]] = None
+    fixed_spatial_masks: Optional[List[List[int]]] = None
     initial_temporal_probability: float = 0.5
-    fixed_temporal_masks:List[List[int]] = None
+    fixed_temporal_masks:Optional[List[List[int]]] = None
     node_kwargs = None
     num_rounds = 1
     # agent_names = []
@@ -174,3 +178,32 @@ def split_list(input_list, ratio):
     part2 = input_list[split_index:]
     
     return part1, part2
+
+def plot_embedding_heatmap(embedding: torch.Tensor, title: str, save_path: str):
+    embedding_np = embedding.detach().cpu().numpy()
+
+    plt.figure(figsize=(10, max(4, embedding_np.shape[0] * 0.4)))
+    sns.heatmap(embedding_np, cmap="viridis", cbar=True)
+
+    plt.title(title)
+    plt.xlabel("Embedding Dimension")
+    plt.ylabel("Index")
+
+    plt.tight_layout()
+    plt.savefig(save_path)
+    plt.close()
+
+def plot_row_similarity(embeddings: torch.Tensor, title: str, save_path: str):
+    embeddings_np = embeddings.detach().cpu().numpy()
+    row_similarities = np.corrcoef(embeddings_np)
+
+    plt.figure(figsize=(10, max(4, row_similarities.shape[0] * 0.4)))
+    sns.heatmap(row_similarities, cmap="viridis", cbar=True)
+
+    plt.title(title)
+    plt.xlabel("Index")
+    plt.ylabel("Index")
+
+    plt.tight_layout()
+    plt.savefig(save_path)
+    plt.close()

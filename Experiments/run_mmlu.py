@@ -1,15 +1,14 @@
 import sys
 import os
+import io
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-sys.stdout.reconfigure(encoding='utf-8')
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 import time
 import argparse
 import yaml
 import json
-import time
-import re
 import torch
 import numpy as np
 from loguru import logger
@@ -22,7 +21,6 @@ from MAR.Prompts.tasks_profile import tasks_profile
 from MAR.Tools.reader.readers import JSONLReader
 from MAR.Tools.coding.python_executor import PyExecutor
 from MAR.Utils.utils import fix_random_seed
-from MAR.Utils.const import MAR_ROOT
 from MAR.Utils.globals import Cost, PromptTokens, CompletionTokens
 from MAR.Utils.log import configure_logging
 from Datasets.mmlu_dataset import MMLUDataset
@@ -51,14 +49,16 @@ def parse_args():
     parser = argparse.ArgumentParser(description="MAR Experiments on MMLU")
     parser.add_argument("--result_file", type=str, default=None)
     parser.add_argument('--lr', type=float, default=0.01,help="learning rate")
-    parser.add_argument('--batch_size', type=int, default=4,help="batch size")
-    parser.add_argument('--epochs', type=int, default=5, help="Prune every few iterations. Default 5.")
+    parser.add_argument('--batch_size', type=int, default=16,help="batch size")
+    parser.add_argument('--epochs', type=int, default=10, help="Prune every few iterations. Default 5.")
     parser.add_argument('--num_rounds',type=int,default=1,help="Number of optimization/inference rounds for one query")
     parser.add_argument('--domain', type=str, default="mmlu",help="Domain (the same as dataset name), default 'mmlu'")
     parser.add_argument('--decision_method', type=str, default='FinalRefer',
                         help='The decison method of the agentprune')
     parser.add_argument('--prompt_file', type=str, default='MAR/Roles/FinalNode/mmlu.json')
     parser.add_argument('--start_epoch', type=int, default=0)
+    parser.add_argument('--cost_rate', type=float, default=500.0)
+    parser.add_argument('--max_agent', type=int, default=6)
     args = parser.parse_args()
     return args
 
@@ -78,22 +78,22 @@ if __name__ == '__main__':
     configure_logging(log_name=log_file)
     total_solved, total_executed = (0, 0)
     
-    download()
+    # download()
     dataset_train = MMLUDataset('dev')
     dataset_test = MMLUDataset('test')
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    router = MasRouter().to(device)
+    router = MasRouter(max_agent=args.max_agent, device=device).to(device)
     optimizer = torch.optim.Adam(router.parameters(), lr=args.lr)
     tasks = tasks_profile
     llms = llm_profile
     reasonings = reasoning_profile
     logger.info("Start training...")
     
-    train_batch = 40
+    train_batch = min(40,len(dataset_train)//args.batch_size)
     for i_epoch in range(args.epochs):
         if i_epoch < args.start_epoch:
-            router.load_state_dict(torch.load(f"mmlu_router_epoch{i_epoch}.pth", map_location=torch.device('cuda')))
+            router.load_state_dict(torch.load(f"mmlu_router_epoch{i_epoch}.pth", map_location=device))
             continue
         for i_batch in range(train_batch):
             print(f"Batch {i_batch}",80*'-')
@@ -106,26 +106,31 @@ if __name__ == '__main__':
             task_labels = [1 for _ in current_batch]
             tasks_y = torch.tensor(task_labels).to(device)
             optimizer.zero_grad()
-            results, costs, log_probs, tasks_probs = router.forward(queries, tasks, llms, reasonings, task_labels, prompt_file=args.prompt_file)
+            results, costs, log_probs, tasks_probs, vae_loss, agents_num  = router.forward(queries, tasks, llms, reasonings, task_labels, prompt_file=args.prompt_file)
             task_loss = F.cross_entropy(tasks_probs, tasks_y)
             utilities = []
             answers_loss = []
-
+            is_solved_list = []
             for query, result, answer, log_prob, cost in zip(queries, results, answers, log_probs, costs):
                 predict_answer = MATH_get_predict(result)[0]
                 is_solved = str(predict_answer).strip()==str(answer).strip()
                 total_solved = total_solved + is_solved
                 total_executed = total_executed + 1
-                utility = is_solved - cost * 10
+                utility = is_solved - cost * args.cost_rate
                 utilities.append(utility)
+                is_solved_list.append(is_solved)
                 answer_loss = -log_prob * utility
                 answers_loss.append(answer_loss)
                 logger.debug(f"Raw Result: {result}")
                 logger.debug(f"Predict: {predict_answer}")
                 logger.debug(f"Truth: {answer}")
                 logger.debug(f"Cost: {cost}")
-            answer_loss = sum(answers_loss)/len(answers_loss)
-            loss = task_loss + answer_loss
+                logger.debug(f"is_solved: {is_solved}")
+            answer_loss = torch.stack(answers_loss).sum() / len(answers_loss)
+            vae_loss = vae_loss.mean()
+            is_solved_tensor = torch.tensor(is_solved_list, dtype=torch.float32, device=device).unsqueeze(1)  # shape: [N, 1]
+            # adjust_loss = ((1 - is_solved_tensor) * (router.num_determiner.max_agent - agents_num) + 0.25 * is_solved_tensor *  agents_num).mean()
+            loss = task_loss + answer_loss + vae_loss*0.001 # + adjust_loss
             loss.backward()
             optimizer.step()
             
@@ -133,16 +138,22 @@ if __name__ == '__main__':
             logger.info(f"Batch time {time.time() - start_ts:.3f}")
             logger.info(f"Accuracy: {accuracy}")
             logger.info(f"utilities:{utilities}")
+            logger.info(f"avg reward:{sum(utilities)/len(utilities)}")
             logger.info(f"task_loss:{task_loss.item()}" )
             logger.info(f"answer_loss:{answer_loss.item()}")
+            logger.info(f"vae_loss:{vae_loss.item()}")
+            # logger.info(f"adjust_loss:{adjust_loss.item()}")
             logger.info(f"loss:{loss.item()}")
+            logger.info(f"Cost {Cost.instance().value}")
+            logger.info(f"PromptTokens {PromptTokens.instance().value}")
+            logger.info(f"CompletionTokens {CompletionTokens.instance().value}")
         logger.info(f"Epoch {i_epoch} Finishes",80*'-')
         torch.save(router.state_dict(), f"mmlu_router_epoch{i_epoch}.pth")
 
     logger.info("Finish training...")
     logger.info("Start testing...")
     total_solved, total_executed = (0, 0)
-    test_batch = 80
+    test_batch = min(80, len(dataset_test)//args.batch_size)
     for i_batch in range(test_batch):
         if i_batch < train_batch:
             continue
@@ -155,7 +166,7 @@ if __name__ == '__main__':
         answers = [item['answer'] for item in current_batch]
         task_labels = [1 for _ in current_batch]
         tasks_y = torch.tensor(task_labels).to(device)
-        results, costs, log_probs, tasks_probs = router.forward(queries, tasks, llms, reasonings, task_labels, prompt_file=args.prompt_file)
+        results, costs, log_probs, tasks_probs, vae_loss, agents_num = router.forward(queries, tasks, llms, reasonings, task_labels, prompt_file=args.prompt_file)
         utilities = []
         answers_loss = []
 
@@ -164,11 +175,19 @@ if __name__ == '__main__':
             is_solved = str(predict_answer)==str(answer)
             total_solved = total_solved + is_solved
             total_executed = total_executed + 1
+            utility = is_solved - cost * args.cost_rate
+            utilities.append(utility)
             logger.debug(f"Raw Result: {result}")
             logger.debug(f"Predict: {predict_answer}")
             logger.debug(f"Truth: {answer}")
+            logger.debug(f"Cost: {cost}")
         
         accuracy = total_solved / total_executed
         logger.info(f"Batch time {time.time() - start_ts:.3f}")
         logger.info(f"Accuracy: {accuracy}")
+        logger.info(f"utilities:{utilities}")
+        logger.info(f"avg reward:{sum(utilities)/len(utilities)}")
+        logger.info(f"Cost {Cost.instance().value}")
+        logger.info(f"PromptTokens {PromptTokens.instance().value}")
+        logger.info(f"CompletionTokens {CompletionTokens.instance().value}")
     logger.info("Finish testing...")

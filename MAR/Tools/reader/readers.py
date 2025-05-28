@@ -58,7 +58,8 @@ class Reader(ABC):
 class TXTReader(Reader):
     def parse(self, file_path: Path) -> str:
         content = charset_normalizer.from_path(file_path).best()
-        logger.info(f"Reading TXT file from {file_path} using encoding '{content.encoding}.'")
+        encoding = getattr(content, 'encoding', None)
+        logger.info(f"Reading TXT file from {file_path} using encoding '{encoding}'.")
         return str(content)
     
 class PDFReader(Reader):
@@ -80,7 +81,7 @@ class DOCXReader(Reader):
         return text
 
 class JSONReader(Reader):
-    def parse_file(file_path: Path) -> list:
+    def parse_file(self, file_path: Path) -> list:
         logger.info(f"Reading JSON file from {file_path}.")
         try:
             with open(file_path, "r") as f:
@@ -101,14 +102,14 @@ class JSONReader(Reader):
             return ''
         
 class JSONLReader(Reader):
-    def parse_file(file_path: Path) -> list:
+    def parse_file(self, file_path) -> list:
         logger.info(f"Reading JSON Lines file from {file_path}.")
         with open(file_path, "r",encoding='utf-8') as f:
             lines = [json.loads(line) for line in f]
             #text = '\n'.join([str(line) for line in lines])
         return lines #text
     
-    def parse(file_path: Path) -> str:
+    def parse(self, file_path) -> str:
         logger.info(f"Reading JSON Lines file from {file_path}.")
         with open(file_path, "r",encoding='utf-8') as f:
             lines = [json.loads(line) for line in f]
@@ -223,7 +224,7 @@ class XLSXReader(Reader):
         return text
 
 class ZipReader(Reader):
-    def parse(self, file_path: Path) -> str:
+    def parse(self, file_path: str) -> Optional[str]:
         #only support files that can be represented as text
         logger.info(f"Reading ZIP file from {file_path}.")
         try:
@@ -244,7 +245,7 @@ class ZipReader(Reader):
 
 
 class PythonReader(Reader):
-    def parse(self, file_path: Path) -> str:
+    def parse(self, file_path: Path):
         logger.info(f"Executing and reading Python file from {file_path}.")
         execution_result = ""
         error = ""
@@ -266,15 +267,15 @@ class PythonReader(Reader):
 
 
 class IMGReader(Reader):
-    def parse(self, file_path: Path, task: str = "Describe this image as detail as possible." ) -> str:
+    def parse(self, file_path: str, task: str = "Describe this image as detail as possible." ):
         # logger.info(f"Reading image file from {file_path}.")
         # runner = VisualLLMRegistry.get()
         # answer = runner.gen(task, file_path)
         # return answer
-        pass
+        return ""
 
 class VideoReader(Reader): 
-    def parse(self, file_path: Path, task: str = "Describe this image as detail as possible.", frame_interval: int = 30, used_audio: bool = True) -> list:
+    def parse(self, file_path: str, task: str = "Describe this image as detail as possible.", frame_interval: int = 30, used_audio: bool = True):
         # logger.info(f"Processing video file from {file_path} with frame interval {frame_interval}.")
         # runner = VisualLLMRegistry.get()
         # answer = runner.gen_video(task, file_path, frame_interval)
@@ -283,7 +284,7 @@ class VideoReader(Reader):
         #     audio_content = AudioReader.parse(file_path)
 
         # return answer + "The audio includes:\n" + audio_content
-        pass
+        return ""
 
 
 # Support 41 kinds of files.
@@ -337,7 +338,7 @@ class FileReader:
         self.reader = READER_MAP[suffix]
         logger.info(f"Setting Reader to {type(self.reader).__name__}")
 
-    def read_file(self, file_path: Path, task="describe the file") -> str:
+    def read_file(self, file_path: str, task="describe the file")->str:
         suffix = '.' + file_path.split(".")[-1]
         self.set_reader(suffix)
         if isinstance(self.reader, IMGReader) or isinstance(self.reader, VideoReader):

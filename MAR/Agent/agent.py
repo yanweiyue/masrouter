@@ -29,7 +29,7 @@ class Agent(Node):
         # Reflect
         if reason_name == "Reflection" and self.post_output_format == "None":
             self.post_output_format = self.output_format
-            self.post_description = "Reflect on possible errors in the answer above and answer again using the same format. If you think there are no errors in your previous answers that will affect the results, there is no need to correct them."
+            self.post_description = "\nReflect on possible errors in the answer above and answer again using the same format. If you think there are no errors in your previous answers that will affect the results, there is no need to correct them.\n"
     
     def _process_inputs(self, raw_inputs:Dict[str,str], spatial_info:Dict[str, Dict], temporal_info:Dict[str, Dict], **kwargs):
         query = raw_inputs['query']
@@ -66,16 +66,73 @@ class Agent(Node):
         logger.debug(f"system prompt:\n {prompt[0]['content']}")
         logger.debug(f"user prompt:\n {prompt[1]['content']}")
         logger.debug(f"response:\n {response}")
+
+        # #! 
+        # received_id = []
+        # for id, info in spatial_info.items():
+        #     role = info["role"].role
+        #     received_id.append(id + '(' + role + ')')
+        # for id, info in temporal_info.items():
+        #     role = info["role"].role
+        #     received_id.append(id + '(' + role + ')')
+
+        # entry = {
+        #     "id": self.id,
+        #     "role": self.role.role,
+        #     "llm_name": self.llm.model_name,
+        #     "system_prompt": prompt[0]['content'],
+        #     "user_prompt": prompt[1]['content'],
+        #     "received_id": received_id,
+        #     "response": response,
+        # }
+        # try:
+        #     with open(f'./result/tmp_log.json', 'r', encoding='utf-8') as f:
+        #         data = json.load(f)
+        # except (FileNotFoundError, json.JSONDecodeError):
+        #     data = []
+
+        # data.append(entry)
+
+        # with open(f'./result/tmp_log.json', 'w', encoding='utf-8') as f:
+        #     json.dump(data, f, ensure_ascii=False, indent=2)
+        # #!
+
         post_format_prompt = output_format_prompt[self.post_output_format]
         if post_format_prompt is not None:
             system_prompt = f"{self.post_description}\n"
             system_prompt += f"Format requirements that must be followed:\n{post_format_prompt}"
-            user_prompt = f"{query}\nThe initial thinking information is:\n{response} Please refer to the new format requirements when replying."
+            user_prompt = f"{query}\nThe initial thinking information is:\n{response} \n Please refer to the new format requirements when replying."
             prompt = [{'role':'system','content':system_prompt},{'role':'user','content':user_prompt}]
             response = self.llm.gen(prompt)
             logger.debug(f"post system prompt:\n {system_prompt}")
             logger.debug(f"post user prompt:\n {user_prompt}")
             logger.debug(f"post response:\n {response}")
+            
+            # #! 
+            # received_id = []
+            # role = self.role.role
+            # received_id.append(self.id + '(' + role + ')')
+
+            # entry = {
+            #     "id": self.id,
+            #     "role": self.role.role,
+            #     "llm_name": self.llm.model_name,
+            #     "system_prompt": prompt[0]['content'],
+            #     "user_prompt": prompt[1]['content'],
+            #     "received_id": received_id,
+            #     "response": response,
+            # }
+            # try:
+            #     with open(f'./result/tmp_log.json', 'r', encoding='utf-8') as f:
+            #         data = json.load(f)
+            # except (FileNotFoundError, json.JSONDecodeError):
+            #     data = []
+
+            # data.append(entry)
+
+            # with open(f'./result/tmp_log.json', 'w', encoding='utf-8') as f:
+            #     json.dump(data, f, ensure_ascii=False, indent=2)
+            # #!
         return response
     
     def _async_execute(self, input, spatial_info, temporal_info, **kwargs):
@@ -103,6 +160,35 @@ class FinalRefer(Node):
         logger.debug(f"Final System Prompt:\n {prompt[0]['content']}")
         logger.debug(f"Final User Prompt:\n {prompt[1]['content']}")
         logger.debug(f"Final Response:\n {response}")
+        # #! 
+        # received_id = []
+        # for id, info in spatial_info.items():
+        #     role = info["role"].role
+        #     received_id.append(id + '(' + role + ')')
+        # for id, info in temporal_info.items():
+        #     role = info["role"].role
+        #     received_id.append(id + '(' + role + ')')
+
+        # entry = {
+        #     "id": self.id,
+        #     "role": "FinalDecision",
+        #     "llm_name": self.llm.model_name,
+        #     "system_prompt": prompt[0]['content'],
+        #     "user_prompt": prompt[1]['content'],
+        #     "received_id": received_id,
+        #     "response": response,
+        # }
+        # try:
+        #     with open(f'./result/tmp_log.json', 'r', encoding='utf-8') as f:
+        #         data = json.load(f)
+        # except (FileNotFoundError, json.JSONDecodeError):
+        #     data = []
+
+        # data.append(entry)
+
+        # with open(f'./result/tmp_log.json', 'w', encoding='utf-8') as f:
+        #     json.dump(data, f, ensure_ascii=False, indent=2)
+        # #!
         return response
     
     def _async_execute(self, input, spatial_info, temporal_info, **kwargs):

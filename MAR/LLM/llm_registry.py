@@ -19,6 +19,10 @@ class LLMRegistry:
     def get(cls, model_name: Optional[str] = None) -> LLM:
         if model_name is None or model_name=="":
             model_name = "gpt-4o-mini"
-        model = cls.registry.get('ALLChat', model_name)
+        if 'DeepSeek-V3' in model_name:
+            model = cls.registry.get('Deepseek', model_name)
+        else:
+            model = cls.registry.get('ALLChat', model_name)
+        
         return model
 

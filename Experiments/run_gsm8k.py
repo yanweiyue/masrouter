@@ -62,13 +62,13 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    dataset = JSONLReader().parse_file("Datasets/gsm8k/sample_gsm8k.jsonl")
+    fix_random_seed(1234)
+    dataset = JSONLReader().parse_file("Datasets/gsm8k/gsm8k.jsonl")
     dataset = gsm_data_process(dataset)
     train_dataset, test_dataset = split_list(dataset, 0.2)
 
     current_time = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
     log_file = f"gsm8k_{current_time}.txt"
-    fix_random_seed(1234)
     configure_logging(log_name=log_file)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

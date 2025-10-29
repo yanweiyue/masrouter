@@ -60,11 +60,11 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    train_dataset = load_math_dataset("Datasets/MATH",split="sampled_train")
-    test_dataset = load_math_dataset("Datasets/MATH",split="sampled_test")
+    fix_random_seed(1234)
+    train_dataset = load_math_dataset("Datasets/MATH",split="train")
+    test_dataset = load_math_dataset("Datasets/MATH",split="test")
     current_time = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
     log_file = f"MATH_{current_time}.txt"
-    fix_random_seed(1234)
     configure_logging(log_name=log_file)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     router = MasRouter(max_agent=args.max_agent,device=device).to(device)

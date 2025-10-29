@@ -2,9 +2,13 @@ docx/
 logs/
 Datasets/MATH/*
 Datasets/MMLU/*
+register/
 
 .env
 *.jsonl
 *.pth
 *.pyc
 *.csv
+*.pptx
+*.zip
+settings.json

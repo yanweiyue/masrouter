@@ -49,7 +49,7 @@ def parse_args():
     parser.add_argument("--result_file", type=str, default=None)
     parser.add_argument('--lr', type=float, default=0.01,help="learning rate")
     parser.add_argument('--batch_size', type=int, default=16,help="batch size")
-    parser.add_argument('--epochs', type=int, default=10, help="Default 5.")
+    parser.add_argument('--epochs', type=int, default=10, help="Default 10.")
     parser.add_argument('--num_rounds',type=int,default=1,help="Number of optimization/inference rounds for one query")
     parser.add_argument('--domain', type=str, default="humaneval",help="Domain (the same as dataset name), default 'humaneval'")
     parser.add_argument('--decision_method', type=str, default='FinalRefer',
@@ -64,11 +64,11 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
+    fix_random_seed(1234)
     dataset = JSONLReader().parse_file("Datasets/humaneval/humaneval-py.jsonl")
     train_dataset, test_dataset = split_list(dataset, 0.2)
     current_time = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
     log_file = f"humaneval_{current_time}.txt"
-    fix_random_seed(1234)
     configure_logging(log_name=log_file)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

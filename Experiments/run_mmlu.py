@@ -72,9 +72,9 @@ def infinite_data_loader(dataset):
 
 if __name__ == '__main__':
     args = parse_args()
+    fix_random_seed(1234)
     current_time = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
     log_file = f"mmlu_{current_time}.txt"
-    fix_random_seed(1234)
     configure_logging(log_name=log_file)
     total_solved, total_executed = (0, 0)
     
